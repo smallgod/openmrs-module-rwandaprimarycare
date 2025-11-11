@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- Scan for @Controller classes in rwandaprimarycare web package -->
+	<!-- Note: RequestMappingHandlerMapping is automatically loaded by OpenMRS Platform -->
+	<context:component-scan base-package="org.openmrs.module.rwandaprimarycare" />
+
+	<!-- Map wildcard path to proxy controller for OpenHIM Client Registry -->
+	<!-- Uses /ws/ prefix pattern (not /module/) for Spring DispatcherServlet routing -->
+	<!-- This follows the pattern used by openmrs-module-webservices.rest -->
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="99"/>
+		<property name="mappings">
+			<props>
+				<prop key="/rwandaprimarycare/openhim/**">openHIMProxyController</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Define proxy controller bean explicitly for handler mapping -->
+	<bean id="openHIMProxyController"
+		  class="org.openmrs.module.rwandaprimarycare.openhim.OpenHIMProxyController"/>
+
+</beans>
