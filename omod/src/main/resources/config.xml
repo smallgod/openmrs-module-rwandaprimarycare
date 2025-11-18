@@ -20,6 +20,7 @@
 		<require_module>org.openmrs.module.namephonetics</require_module>
 		<require_module>org.openmrs.module.mohappointment</require_module>
 		<require_module>org.openmrs.module.mohbilling</require_module>
+		<require_module>org.openmrs.module.fhir2</require_module>
 	</require_modules>
 
 	<aware_of_modules>

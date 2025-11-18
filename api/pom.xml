@@ -61,6 +61,21 @@
 			<version>1.6.0</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- HAPI FHIR for OpenHIM Patient transformation -->
+		<!-- Provided by Client Registry module at runtime (shared dependency) -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-r4</artifactId>
+			<version>5.7.9</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-base</artifactId>
+			<version>5.7.9</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>
