@@ -3,6 +3,8 @@ package org.openmrs.module.rwandaprimarycare.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PersonAttributeType;
@@ -16,7 +18,9 @@ import org.openmrs.module.rwandaprimarycare.PrimaryCareService;
 import org.openmrs.module.rwandaprimarycare.db.PrimaryCareDAO;
 
 public class PrimaryCareServiceImpl extends BaseOpenmrsService implements PrimaryCareService {
-    
+
+    protected final Log log = LogFactory.getLog(getClass());
+
     private PrimaryCareDAO dao;
 
     public void setDao(PrimaryCareDAO dao) {
@@ -147,7 +151,48 @@ public class PrimaryCareServiceImpl extends BaseOpenmrsService implements Primar
             if (stList.size() == 0)
                 return dao.getPatientAddress1List(search);
             
-            
+
             return stList;
+    }
+
+    /**
+     * Save offline transaction for later synchronization
+     */
+    public void saveOfflineTransaction(Object offlineTransaction) {
+        // TODO: Implement offline transaction persistence
+        // This would typically save to database for later sync
+        log.warn("saveOfflineTransaction called but not yet implemented - transaction will not be saved");
+    }
+
+    /**
+     * Find patients by identifier value
+     */
+    public List<Patient> findPatientByIdentifier(String identifier) {
+        if (identifier == null || identifier.trim().isEmpty()) {
+            return new ArrayList<Patient>();
+        }
+        return Context.getPatientService().getPatients(null, identifier, null, true);
+    }
+
+    /**
+     * Create last Tracnet ID for a patient
+     * TODO: Implement proper Tracnet ID generation logic
+     */
+    public String createLastTracnetId(String fosaID, int patientId, String locationId, String prefix) {
+        log.info("Creating Tracnet ID for patient: " + patientId + " with fosaID: " + fosaID);
+
+        // Generate a basic Tracnet ID format: PREFIX-FOSAID-PATIENTID
+        // This is a placeholder implementation - replace with actual business logic
+        if (prefix == null || prefix.isEmpty()) {
+            prefix = "TN";
+        }
+        if (fosaID == null || fosaID.isEmpty()) {
+            fosaID = "000";
+        }
+
+        String tracnetId = prefix + "-" + fosaID + "-" + String.format("%06d", patientId);
+        log.info("Generated Tracnet ID: " + tracnetId);
+
+        return tracnetId;
     }
 }

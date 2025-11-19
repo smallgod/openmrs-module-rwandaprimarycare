@@ -42,10 +42,10 @@ public interface PrimaryCareService extends OpenmrsService {
 	 */
 	@Transactional(readOnly=true)
     public List<Patient> getPatients(
-    		String frenchEnglishName, 
+    		String frenchEnglishName,
     		String rwandanName,
     		String gender,
-    		Float age, 
+    		Float age,
     		String mothersRwandanName,
     		String fathersRwandanName,
 			String patientEducationLevel,
@@ -60,5 +60,34 @@ public interface PrimaryCareService extends OpenmrsService {
     		String umudugudu,
     		PersonAttributeType healthCenterPat,
             Location userLocation);
-	
+
+	/**
+	 * Save offline transaction for later synchronization
+	 *
+	 * @param offlineTransaction Transaction to save
+	 */
+	@Transactional
+	public void saveOfflineTransaction(Object offlineTransaction);
+
+	/**
+	 * Find patients by identifier value
+	 *
+	 * @param identifier Identifier value to search
+	 * @return List of matching patients
+	 */
+	@Transactional(readOnly=true)
+	public List<Patient> findPatientByIdentifier(String identifier);
+
+	/**
+	 * Create last Tracnet ID for a patient
+	 *
+	 * @param fosaID Facility ID
+	 * @param patientId Patient ID
+	 * @param locationId Location ID
+	 * @param prefix Tracnet ID prefix
+	 * @return Generated Tracnet ID
+	 */
+	@Transactional
+	public String createLastTracnetId(String fosaID, int patientId, String locationId, String prefix);
+
 }

@@ -60,6 +60,14 @@ public class PrimaryCareConstants {
     public static final String GLOBAL_PROPERTY_PROFESSION_CONCEPT = "Profession";
     public static final String GLOBAL_PROPERTY_RELIGION_CONCEPT = "Religion";
     public static final String GLOBAL_PROPERTY_PHONE_NUMBER_CONCEPT = "Phone Number";
-   
-    
+    public static final String GLOBAL_PROPERTY_CIVIL_STATUS_CONCEPT = "Civil Status";
+    public static final String GLOBAL_PROPERTY_SPOUSE_NAME_CONCEPT = "Spouse Name";
+    public static final String GLOBAL_PROPERTY_FACILITY_ID = "facility.fosa.id";
+    public static final String GLOBAL_PROPERTY_DHIS2_PREFIX = "dhis2.organizationunitcode";
+    public static final String GLOBAL_PROPERTY_SCHEDULER_USERNAME = "posttoopenhim.scheduler.username";
+    public static final String GLOBAL_PROPERTY_SCHEDULER_PASSWORD = "posttoopenhim.scheduler.password";
+    public static final String NATIONALITY_ATTRIBUTE_TYPE = "Nationality";
+    public static final String MIGRATE_SHR_ENDPOINT = "http://localhost:8080/openmrs/ws/rest/fhir2/Patient/";
+
+
 }
