@@ -1,0 +1,54 @@
+{
+  "surName": "Doe",
+  "postNames": "John Michael",
+  "gender": "M",
+  "dateOfBirth": "1990-01-15",
+  "fatherName": "Doe Senior",
+  "motherName": "Doe Jane",
+  "phoneNumber": "+250788123456",
+  "identifiers": [
+    {
+      "system": "NID",
+      "value": "1234567890123456",
+      "comment": "National ID"
+    },
+    {
+      "system": "PRIMARY_CARE_ID",
+      "value": "123456-X",
+      "comment": "IMPORTANT: Generate valid PC ID using generate_pc_id.py script"
+    },
+    {
+      "system": "PASSPORT",
+      "value": "PC1234567",
+      "comment": "Optional - Passport number"
+    }
+  ],
+  "addressList": [
+    {
+      "type": "RESIDENTIAL",
+      "country": "Rwanda",
+      "state": "Kigali",
+      "district": "Gasabo",
+      "sector": "Remera",
+      "cell": "Rukiri",
+      "city": "Kigali",
+      "postalCode": "KG123",
+      "street": "KN 5 Ave"
+    },
+    {
+      "type": "WORK",
+      "country": "Rwanda",
+      "state": "Kigali",
+      "district": "Kicukiro",
+      "sector": "Gatenga",
+      "cell": "Karama",
+      "city": "Kigali"
+    }
+  ],
+  "maritalStatus": "Married",
+  "nationality": "Rwandan",
+  "educationalLevel": "University",
+  "profession": "Software Engineer",
+  "religion": "Christian",
+  "comment": "Full patient creation with all optional fields"
+}

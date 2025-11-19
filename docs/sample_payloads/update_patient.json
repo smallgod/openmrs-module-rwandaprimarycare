@@ -1,0 +1,37 @@
+{
+  "surName": "Doe",
+  "postNames": "John Updated",
+  "gender": "M",
+  "dateOfBirth": "1990-01-15",
+  "phoneNumber": "+250788999999",
+  "identifiers": [
+    {
+      "system": "PRIMARY_CARE_ID",
+      "value": "123456-X",
+      "comment": "Primary Care ID - REQUIRED for update"
+    },
+    {
+      "system": "UPI",
+      "value": "UPI-12345",
+      "comment": "UPI can also be used for update"
+    }
+  ],
+  "addressList": [
+    {
+      "type": "RESIDENTIAL",
+      "country": "Rwanda",
+      "state": "Kigali",
+      "district": "Kicukiro",
+      "sector": "Gahanga",
+      "cell": "Karembure",
+      "city": "Kigali",
+      "street": "KK 100 St"
+    }
+  ],
+  "maritalStatus": "Married",
+  "nationality": "Rwandan",
+  "educationalLevel": "University",
+  "profession": "Engineer",
+  "updateCrFlag": true,
+  "comment": "Update patient - updateCrFlag=true will sync changes to Client Registry"
+}

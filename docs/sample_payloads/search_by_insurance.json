@@ -1,0 +1,6 @@
+{
+  "documentNumber": "INS123456789",
+  "documentType": "INSURANCE_POLICY_NUMBER",
+  "fosaid": "test-facility",
+  "comment": "Search by Insurance Policy Number - Requires MOH Billing module"
+}

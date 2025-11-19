@@ -1,0 +1,26 @@
+{
+  "surName": "TestPatient",
+  "postNames": "MinimalData",
+  "gender": "F",
+  "dateOfBirth": "1995-06-20",
+  "identifiers": [
+    {
+      "system": "PRIMARY_CARE_ID",
+      "value": "789012-Y",
+      "comment": "IMPORTANT: Generate valid PC ID using generate_pc_id.py script"
+    }
+  ],
+  "addressList": [
+    {
+      "type": "RESIDENTIAL",
+      "country": "Rwanda",
+      "state": "Kigali",
+      "district": "Gasabo",
+      "sector": "Remera",
+      "cell": "Rukiri",
+      "city": "Kigali"
+    }
+  ],
+  "nationality": "Rwandan",
+  "comment": "Minimal required fields for patient creation"
+}

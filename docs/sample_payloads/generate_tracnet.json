@@ -1,0 +1,4 @@
+{
+  "patientId": 12345,
+  "comment": "Generate Tracnet ID - Replace with actual OpenMRS patient ID (integer)"
+}
