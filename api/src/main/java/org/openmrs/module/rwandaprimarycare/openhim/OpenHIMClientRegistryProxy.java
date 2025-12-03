@@ -212,6 +212,17 @@ public class OpenHIMClientRegistryProxy {
 					response, targetUri, queryString, entity, restTemplate, method);
 			}
 
+			// 6.6. Enrich empty POST/PUT responses with patient data
+			// OpenHIM/SanteMPI returns HTTP 201/200 with empty body on create/update
+			// This violates FHIR spec (should return created/updated resource)
+			// Workaround: Fetch the patient back from OpenHIM and return it
+			if (("POST".equalsIgnoreCase(httpMethod) || "PUT".equalsIgnoreCase(httpMethod)) &&
+				resourcePath != null && resourcePath.contains("Patient")) {
+
+				response = enrichEmptyCreateUpdateResponse(
+					response, transformedBody, openhimBaseUrl, username, password);
+			}
+
 			// 7. Return response, removing Content-Encoding header
 			// RestTemplate automatically decompresses GZIP responses, but preserves the Content-Encoding header.
 			// This causes HAPI FHIR client to attempt decompression again, resulting in "Not in GZIP format" error.
@@ -613,5 +624,137 @@ public class OpenHIMClientRegistryProxy {
 
 		// No transformation needed - return original
 		return queryString;
+	}
+
+	/**
+	 * Enrich empty CREATE/UPDATE responses with patient data
+	 *
+	 * OpenHIM/SanteMPI violates FHIR spec by returning HTTP 201/200 with empty body.
+	 * The FHIR specification requires servers to return the created/updated resource.
+	 *
+	 * This method:
+	 * 1. Detects empty response body with 2xx status
+	 * 2. Extracts patient ID from the transformed request body
+	 * 3. Fetches the patient back from OpenHIM via GET
+	 * 4. Returns enriched response with full patient data
+	 *
+	 * @param originalResponse Response from OpenHIM POST/PUT
+	 * @param transformedBody Transformed request body (has UPI as Patient.id)
+	 * @param openhimBaseUrl OpenHIM base URL
+	 * @param username OpenHIM username for auth
+	 * @param password OpenHIM password for auth
+	 * @return Enriched response with patient data, or original if not applicable
+	 */
+	private ResponseEntity<String> enrichEmptyCreateUpdateResponse(
+			ResponseEntity<String> originalResponse,
+			String transformedBody,
+			String openhimBaseUrl,
+			String username,
+			String password) {
+
+		try {
+			// Only enrich if response is successful but empty
+			if (!originalResponse.getStatusCode().is2xxSuccessful()) {
+				return originalResponse;
+			}
+
+			String responseBody = originalResponse.getBody();
+			if (responseBody != null && !responseBody.trim().isEmpty()) {
+				// Response has content, no enrichment needed
+				return originalResponse;
+			}
+
+			log.info("OpenHIM returned empty body for POST/PUT, fetching patient back...");
+
+			// Extract patient ID from transformed request body
+			// The transformedBody has Patient.id set to UPI value
+			String patientId = extractPatientIdFromRequest(transformedBody);
+			if (patientId == null || patientId.isEmpty()) {
+				log.warn("Could not extract patient ID from request, returning empty response");
+				return originalResponse;
+			}
+
+			// Fetch patient from OpenHIM
+			String fetchUrl = openhimBaseUrl + "/Patient/" + patientId;
+			log.debug("Fetching patient from: " + fetchUrl);
+
+			// Prepare GET request with OpenHIM auth
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Authorization", createBasicAuthHeader(username, password));
+			headers.set("Accept", "application/fhir+json, application/json");
+			HttpEntity<String> fetchEntity = new HttpEntity<>(headers);
+
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> fetchResponse = restTemplate.exchange(
+				fetchUrl, HttpMethod.GET, fetchEntity, String.class);
+
+			if (fetchResponse.getStatusCode().is2xxSuccessful() &&
+				fetchResponse.getBody() != null &&
+				!fetchResponse.getBody().trim().isEmpty()) {
+
+				log.info("✅ Successfully enriched empty response with patient data");
+
+				// Return enriched response with original status code (201/200)
+				// but with fetched patient body
+				HttpHeaders enrichedHeaders = new HttpHeaders();
+				enrichedHeaders.putAll(fetchResponse.getHeaders());
+				enrichedHeaders.remove(HttpHeaders.CONTENT_ENCODING);
+
+				return ResponseEntity.status(originalResponse.getStatusCode())
+					.headers(enrichedHeaders)
+					.body(fetchResponse.getBody());
+			} else {
+				log.warn("Failed to fetch patient, GET returned: " + fetchResponse.getStatusCode());
+				return originalResponse;
+			}
+
+		} catch (Exception e) {
+			log.warn("Failed to enrich empty response: " + e.getMessage());
+			// Return original empty response - let client handle it
+			return originalResponse;
+		}
+	}
+
+	/**
+	 * Extract Patient.id from FHIR JSON request body
+	 *
+	 * The transformed request body has Patient.id set to the UPI value.
+	 * Uses FHIR parser for proper, standards-compliant extraction.
+	 *
+	 * @param requestBody FHIR JSON Patient resource
+	 * @return Patient ID (UPI value) or null if not found
+	 */
+	private String extractPatientIdFromRequest(String requestBody) {
+		if (requestBody == null || requestBody.isEmpty()) {
+			return null;
+		}
+
+		try {
+			// Lazy initialization of FhirContext (thread-safe)
+			if (fhirContext == null) {
+				synchronized (this) {
+					if (fhirContext == null) {
+						fhirContext = FhirContext.forR4();
+					}
+				}
+			}
+
+			// Parse using FHIR parser (professional, standards-compliant)
+			IParser parser = fhirContext.newJsonParser();
+			Patient patient = parser.parseResource(Patient.class, requestBody);
+
+			if (patient.hasId()) {
+				String patientId = patient.getIdElement().getIdPart();
+				log.debug("Extracted patient ID from request: " + patientId);
+				return patientId;
+			}
+
+			log.warn("Patient resource has no ID");
+			return null;
+
+		} catch (Exception e) {
+			log.warn("Error extracting patient ID from request: " + e.getMessage());
+			return null;
+		}
 	}
 }

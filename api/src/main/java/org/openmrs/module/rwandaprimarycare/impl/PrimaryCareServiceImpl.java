@@ -10,6 +10,7 @@ import org.openmrs.Patient;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.module.addresshierarchy.AddressHierarchyEntry;
 import org.openmrs.module.addresshierarchy.service.AddressHierarchyService;
 import org.openmrs.module.rwandaprimarycare.PrimaryCareBusinessLogic;
@@ -171,7 +172,13 @@ public class PrimaryCareServiceImpl extends BaseOpenmrsService implements Primar
         if (identifier == null || identifier.trim().isEmpty()) {
             return new ArrayList<Patient>();
         }
-        return Context.getPatientService().getPatients(null, identifier, null, true);
+
+        try {
+            Context.addProxyPrivilege(PrivilegeConstants.GET_PATIENTS);
+            return Context.getPatientService().getPatients(null, identifier, null, true);
+        } finally {
+            Context.removeProxyPrivilege(PrivilegeConstants.GET_PATIENTS);
+        }
     }
 
     /**
