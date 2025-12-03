@@ -430,7 +430,10 @@ public class FindPatientService {
             results = (List<PatientPojo>) responseDTO.getResults();
             PatientPojo patientPojo = results.get(0);
             try {
-                traceNetID = singletonPatient.get(0).getPatientIdentifier(4).getIdentifier();
+                PatientIdentifier patientIdentifier = singletonPatient.get(0).getPatientIdentifier(4);
+                if (patientIdentifier != null) {
+                    traceNetID = patientIdentifier.getIdentifier();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1707,12 +1710,18 @@ public class FindPatientService {
         String addIdentifier = "";
         String traceNetID = "";
         try {
-            addIdentifier = localPatient.getPatientIdentifier(3).getIdentifier();
+            PatientIdentifier primaryCareIdentifier = localPatient.getPatientIdentifier(3);
+            if (primaryCareIdentifier != null) {
+                addIdentifier = primaryCareIdentifier.getIdentifier();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            traceNetID = localPatient.getPatientIdentifier(4).getIdentifier();
+            PatientIdentifier tracnetIdentifier = localPatient.getPatientIdentifier(4);
+            if (tracnetIdentifier != null) {
+                traceNetID = tracnetIdentifier.getIdentifier();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1798,7 +1807,10 @@ public class FindPatientService {
                 offlineTransaction.setPayload(localData);
                 offlineTransaction.setNationalIdType("NID");
                 try {
-                    offlineTransaction.setNationalId(localPatient.getPatientIdentifier(5).getIdentifier());
+                    PatientIdentifier nidIdentifier = localPatient.getPatientIdentifier(5);
+                    if (nidIdentifier != null) {
+                        offlineTransaction.setNationalId(nidIdentifier.getIdentifier());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
